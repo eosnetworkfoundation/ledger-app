@@ -20,13 +20,32 @@ sudo docker build -t ledger-app-builder:latest .
 
 This will take a few minutes to install
 
+## Prepare to Connect Device
+Set `udev` rules to enable devices to connect with docker container. *Note:* Instructions are for linux and tested on Ubuntu 22.
+```
+wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_udev_rules.sh | sudo bash
+```
+
+Download your app
+```
+git clone https://github.com/eosnetworkfoundation/ledger-app.git
+```
+
 ## Compile your ledger app
 
 * go to your instance directory:
 * copy over the files and enter the docker container
 ```
 cd /User/me/my-app/
-sudo docker run --rm -ti -v "/Users/me/my-app:/app" ledger-app-builder:latest
+sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+bash-5.1# make clean
+bash-5.1# make
+```
+
+If you want to **load** and **delete** your app directly from the container image you need to provide `--privileged` access.
+
+```
+sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app" --privileged ledger-app-builder:latest
 bash-5.1# make clean
 bash-5.1# make
 ```
@@ -57,3 +76,10 @@ bash-5.1# BOLOS_SDK=$NANOSP_SDK make
 ```
 
 Instructions taken from [Ledger HQ App Builder Readme](https://raw.githubusercontent.com/LedgerHQ/ledger-app-builder/master/README.md) with modification.
+
+## Loading App
+
+- Plugin and unlock your device
+- From within your container  
+  - `make load` or `BOLOS_SDK=$NANOSP_SDK make load` for the S-Plus
+  - `make delete` to delete it
