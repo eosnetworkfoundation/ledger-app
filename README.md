@@ -9,36 +9,51 @@ To use the generic wallet refer to `signTransaction.py`, `getPublicKey.py` or Le
 # How to Install developer version
 ## Configuring Ledger Environment
 
-* Install Vagrant and Virtualbox on your machine
-* Run the following
+* Install Docker on your machines
+* Checkout the app builder repository
 
 ```
-git clone https://github.com/fix/ledger-vagrant
-cd ledger-vagrant
-vagrant up
+git clone https://github.com/LedgerHQ/ledger-app-builder.git
+cd ledger-app-builder
+sudo docker build -t ledger-app-builder:latest .
 ```
 
 This will take a few minutes to install
 
 ## Compile your ledger app
 
-* install your app under apps/ for instance:
+* go to your instance directory:
+* copy over the files and enter the docker container
 ```
-cd apps/
-git clone https://github.com/tarassh/eos-ledger
-
-```
-* connect to the machine with `ssh vagrant`
-* build eos app
-
-```
-cd apps/eos-ledger
-make clean
-make
+cd /User/me/my-app/
+sudo docker run --rm -ti -v "/Users/me/my-app:/app" ledger-app-builder:latest
+bash-5.1# make clean
+bash-5.1# make
 ```
 
-* connect your ledger Nano S to your computer
-* install the app on your ledger: `make load`
-* remove the app from the ledger: `make delete`
+## Clang Analyzer
 
-Install instruction with slight modifications has been taken from [here](https://github.com/fix/ledger-vagrant)
+```
+sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+bash-5.1# make scan-build
+```
+
+## Ledger Variants
+
+For Nano X, specify the BOLOS_SDK environment variable before building your app:
+
+```
+sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+bash-5.1# make clean
+bash-5.1# BOLOS_SDK=$NANOX_SDK make
+```
+
+For Nano S+, specify the BOLOS_SDK environment variable before building your app:
+
+```
+sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+bash-5.1# make clean
+bash-5.1# BOLOS_SDK=$NANOSP_SDK make
+```
+
+Instructions taken from [Ledger HQ App Builder Readme](https://raw.githubusercontent.com/LedgerHQ/ledger-app-builder/master/README.md) with modification.
