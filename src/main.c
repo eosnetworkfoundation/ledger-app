@@ -193,7 +193,8 @@ UX_FLOW(
 );
 
 void display_settings() {
-    strlcpy((char *) confirmLabel, (N_storage.dataAllowed ? allowed : not_allowed),32);
+    // Review: cast destination string from volatile char to char is that ok?
+    strlcpy((char *) confirmLabel, (N_storage.dataAllowed ?  "Allowed" : "NOT Allowed"),32);
     ux_flow_init(0, ux_settings_flow, NULL);
 }
 

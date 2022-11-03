@@ -18,6 +18,7 @@
 #include "eos_parse_eosio.h"
 #include "eos_types.h"
 #include "os.h"
+#include "string.h"
 
 void parseDelegate(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, actionArgument_t *arg) {
     uint32_t read = 0;
