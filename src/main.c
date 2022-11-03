@@ -193,8 +193,8 @@ UX_FLOW(
 );
 
 void display_settings() {
-  strcpy(confirmLabel, (N_storage.dataAllowed ? "Allowed" : "NOT Allowed"));
-  ux_flow_init(0, ux_settings_flow, NULL);
+    strlcpy((char *) confirmLabel, (N_storage.dataAllowed ? allowed : not_allowed),32);
+    ux_flow_init(0, ux_settings_flow, NULL);
 }
 
 void switch_settings_contract_data() {
