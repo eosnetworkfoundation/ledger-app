@@ -1,4 +1,8 @@
 /*******************************************************************************
+*   EOS Network Foundation
+*   (c) 2022 EOS Network Foundation
+*   All changes with MIT License see ./License file.
+*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *
@@ -193,7 +197,6 @@ UX_FLOW(
 );
 
 void display_settings() {
-    // Review: cast destination string from volatile char to char is that ok?
     strlcpy((char *) confirmLabel, (N_storage.dataAllowed ?  "Allowed" : "NOT Allowed"),sizeof(confirmLabel));
     ux_flow_init(0, ux_settings_flow, NULL);
 }

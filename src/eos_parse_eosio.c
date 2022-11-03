@@ -1,4 +1,8 @@
 /*******************************************************************************
+*   EOS Network Foundation
+*   (c) 2022 EOS Network Foundation
+*   All changes with MIT License see ./License file.
+*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *
@@ -176,7 +180,9 @@ void parseUpdateAuth(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, act
         return;
     }
 
-    uint8_t *keys = buffer += 3 * sizeof(name_t) + sizeof(uint32_t);
+    // moved buffer build before keys assigment, previously inline and dead-code
+    buffer += 3 * sizeof(name_t) + sizeof(uint32_t);
+    uint8_t *keys = buffer;
     uint32_t keyBufferLength = bufferLength - 3 * sizeof(name_t) + sizeof(uint32_t);
 
     uint32_t totalKeys = 0;
