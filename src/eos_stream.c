@@ -1,4 +1,8 @@
 /*******************************************************************************
+*   EOS Network Foundation
+*   (c) 2022 EOS Network Foundation
+*   All changes with MIT License see ./License file.
+*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *
@@ -86,7 +90,6 @@ static void processTokenTransfer(txProcessingContext_t *context) {
 
 static void processEosioDelegate(txProcessingContext_t *context) {
     context->content->argumentCount = 4;
-    uint32_t bufferLength = context->currentActionDataBufferLength;
     uint8_t *buffer = context->actionDataBuffer;
 
     buffer += 2 * sizeof(name_t) + 2 * sizeof(asset_t);
