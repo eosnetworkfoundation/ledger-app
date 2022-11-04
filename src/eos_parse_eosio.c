@@ -23,6 +23,7 @@
 #include "eos_types.h"
 #include "os.h"
 #include "string.h"
+#include "stdio.h"
 
 void parseDelegate(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, actionArgument_t *arg) {
     uint32_t read = 0;
@@ -161,8 +162,9 @@ void parseUpdateAuth(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, act
         parseNameField(buffer, bufferLength, "Permission", arg, &read, &written);
         return;
     }
-    
-    uint8_t *parentBuffer = buffer + 2 * sizeof(name_t);
+
+    // added parens for clarity and safety
+    uint8_t *parentBuffer = buffer + (2 * sizeof(name_t));
     name_t parent = 0;
     memmove(&parent, parentBuffer, sizeof(name_t));
     if (parent != 0 && argNum == 2) {
@@ -180,10 +182,12 @@ void parseUpdateAuth(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, act
         return;
     }
 
-    // moved buffer build before keys assigment, previously inline and dead-code
-    buffer += 3 * sizeof(name_t) + sizeof(uint32_t);
+    // for clarity broke out assignment into several lines
+    // prefixLength calculated once was calculated twice
+    uint32_t prefixLength = 3 * sizeof(name_t) + sizeof(uint32_t);
+    buffer += prefixLength;
     uint8_t *keys = buffer;
-    uint32_t keyBufferLength = bufferLength - 3 * sizeof(name_t) + sizeof(uint32_t);
+    uint32_t keyBufferLength = bufferLength - prefixLength ;
 
     uint32_t totalKeys = 0;
     read = unpack_variant32(keys, keyBufferLength, &totalKeys);
