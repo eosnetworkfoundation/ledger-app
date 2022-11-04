@@ -393,8 +393,12 @@ void ux_single_action_sign_flow_ok_pressed()
         ux_step = 0;
         ux_step_count = txContent.argumentCount;
         snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
-        strcpy((char *)confirm_text1, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept");
-        strcpy((char *)confirm_text2, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next");
+        strlcpy((char *)confirm_text1,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+                sizeof(confirm_text1));
+        strlcpy((char *)confirm_text2,
+               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+               sizeof(confirm_text2));
 
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
         break;
@@ -469,8 +473,12 @@ void ux_multiple_action_sign_flow_ok_pressed()
         ux_step = 0;
         ux_step_count = txContent.argumentCount;
         snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
-        strcpy((char *)confirm_text1, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept");
-        strcpy((char *)confirm_text2, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next");
+        strlcpy((char *)confirm_text1,
+               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+               sizeof(confirm_text1));
+        strlcpy((char *)confirm_text2,
+               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+                sizeof(confirm_text2));
 
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
 
@@ -792,11 +800,15 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         if (txProcessingCtx.currentActionNumer > 1) {
             snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
         } else {
-            strcpy((char *)confirmLabel, "Transaction");         
+            strlcpy((char *)confirmLabel, "Transaction", sizeof(confirmLabel));
         }
 
-        strcpy((char *)confirm_text1, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept");
-        strcpy((char *)confirm_text2, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next");
+        strlcpy((char *)confirm_text1,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+                sizeof(confirm_text1));
+        strlcpy((char *)confirm_text2,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+                sizeof(confirm_text2));
         
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
 
