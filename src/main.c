@@ -163,7 +163,7 @@ UX_STEP_CB(
     switch_settings_contract_data(),
     {
       .title = "Contract data",
-      .text = confirmLabel,
+      .text = (char *) confirmLabel,
     });
 
 #else
@@ -267,7 +267,7 @@ UX_STEP_NOCB(
     {
       &C_icon_certificate,
       "Review",
-      confirmLabel,
+      (char *) confirmLabel,
     });
 UX_STEP_NOCB(
     ux_single_action_sign_flow_2_step,
@@ -316,8 +316,8 @@ UX_STEP_CB(
     ux_single_action_sign_flow_ok_pressed(),
     {
       &C_icon_validate_14,
-      confirm_text1,
-      confirm_text2,
+      (char *) confirm_text1,
+      (char *) confirm_text2,
     });
 UX_STEP_CB(
     ux_single_action_sign_flow_8_step,
@@ -432,7 +432,7 @@ UX_FLOW_DEF_NOCB(
     bn, //pnn,
     {
       "With",
-      actionCounter,
+      (char *) actionCounter,
     });
 UX_FLOW_DEF_VALID(
     ux_multiple_action_sign_flow_3_step,
