@@ -1,4 +1,8 @@
 /*******************************************************************************
+*   EOS Network Foundation
+*   (c) 2022 EOS Network Foundation
+*   All changes with MIT License see ./License file.
+*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *

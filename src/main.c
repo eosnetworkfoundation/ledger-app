@@ -1,4 +1,8 @@
 /*******************************************************************************
+*   EOS Network Foundation
+*   (c) 2022 EOS Network Foundation
+*   All changes with MIT License see ./License file.
+*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *
@@ -159,7 +163,7 @@ UX_STEP_CB(
     switch_settings_contract_data(),
     {
       .title = "Contract data",
-      .text = confirmLabel,
+      .text = (char *) confirmLabel,
     });
 
 #else
@@ -193,8 +197,8 @@ UX_FLOW(
 );
 
 void display_settings() {
-  strcpy(confirmLabel, (N_storage.dataAllowed ? "Allowed" : "NOT Allowed"));
-  ux_flow_init(0, ux_settings_flow, NULL);
+    strlcpy((char *) confirmLabel, (N_storage.dataAllowed ?  "Allowed" : "NOT Allowed"),sizeof(confirmLabel));
+    ux_flow_init(0, ux_settings_flow, NULL);
 }
 
 void switch_settings_contract_data() {
@@ -263,7 +267,7 @@ UX_STEP_NOCB(
     {
       &C_icon_certificate,
       "Review",
-      confirmLabel,
+      (char *) confirmLabel,
     });
 UX_STEP_NOCB(
     ux_single_action_sign_flow_2_step,
@@ -312,8 +316,8 @@ UX_STEP_CB(
     ux_single_action_sign_flow_ok_pressed(),
     {
       &C_icon_validate_14,
-      confirm_text1,
-      confirm_text2,
+      (char *) confirm_text1,
+      (char *) confirm_text2,
     });
 UX_STEP_CB(
     ux_single_action_sign_flow_8_step,
@@ -389,8 +393,12 @@ void ux_single_action_sign_flow_ok_pressed()
         ux_step = 0;
         ux_step_count = txContent.argumentCount;
         snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
-        strcpy((char *)confirm_text1, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept");
-        strcpy((char *)confirm_text2, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next");
+        strlcpy((char *)confirm_text1,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+                sizeof(confirm_text1));
+        strlcpy((char *)confirm_text2,
+               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+               sizeof(confirm_text2));
 
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
         break;
@@ -428,7 +436,7 @@ UX_FLOW_DEF_NOCB(
     bn, //pnn,
     {
       "With",
-      actionCounter,
+      (char *) actionCounter,
     });
 UX_FLOW_DEF_VALID(
     ux_multiple_action_sign_flow_3_step,
@@ -465,8 +473,12 @@ void ux_multiple_action_sign_flow_ok_pressed()
         ux_step = 0;
         ux_step_count = txContent.argumentCount;
         snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
-        strcpy((char *)confirm_text1, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept");
-        strcpy((char *)confirm_text2, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next");
+        strlcpy((char *)confirm_text1,
+               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+               sizeof(confirm_text1));
+        strlcpy((char *)confirm_text2,
+               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+                sizeof(confirm_text2));
 
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
 
@@ -497,14 +509,14 @@ void ui_idle(void)
     ux_flow_init(0, ux_idle_flow, NULL);
 }
 
-unsigned int io_seproxyhal_touch_exit(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_exit(__attribute__((unused)) const bagl_element_t *e)
 {
     // Go back to the dashboard
     os_sched_exit(0);
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_address_ok(__attribute__((unused)) const bagl_element_t *e)
 {
     uint32_t tx = get_public_key_and_set_result();
     io_exchange_with_code(0x9000, tx);
@@ -513,7 +525,7 @@ unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e)
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_address_cancel(__attribute__((unused)) const bagl_element_t *e)
 {
     io_exchange_with_code(0x6985, 0);
     // Display back the original UX
@@ -521,7 +533,7 @@ unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e)
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_tx_ok(__attribute__((unused)) const bagl_element_t *e)
 {
     uint32_t tx = sign_hash_and_set_result();
     io_exchange_with_code(0x9000, tx);
@@ -531,7 +543,7 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e)
     return 0; // do not redraw the widge
 }
 
-unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_tx_cancel(__attribute__((unused)) const bagl_element_t *e)
 {
     io_exchange_with_code(0x6985, 0);
     // Display back the original UX
@@ -704,7 +716,9 @@ uint32_t sign_hash_and_set_result(void)
             rng_rfc6979(G_io_apdu_buffer + 100, tmpCtx.transactionContext.hash, NULL, 0, SECP256K1_N, 32, V, K);
         }
         uint32_t infos;
-        tx = cx_ecdsa_sign(&privateKey, CX_NO_CANONICAL | CX_RND_PROVIDED | CX_LAST, CX_SHA256,
+        // ignores returns signature length which is always 64, we always return length of 65
+        // tx = cx_ecdsa_sign(...) // ignore tx
+        cx_ecdsa_sign(&privateKey, CX_NO_CANONICAL | CX_RND_PROVIDED | CX_LAST, CX_SHA256,
                            tmpCtx.transactionContext.hash, 32, 
                            G_io_apdu_buffer + 100, 100,
                            &infos);
@@ -788,11 +802,15 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         if (txProcessingCtx.currentActionNumer > 1) {
             snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
         } else {
-            strcpy((char *)confirmLabel, "Transaction");         
+            strlcpy((char *)confirmLabel, "Transaction", sizeof(confirmLabel));
         }
 
-        strcpy((char *)confirm_text1, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept");
-        strcpy((char *)confirm_text2, txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next");
+        strlcpy((char *)confirm_text1,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+                sizeof(confirm_text1));
+        strlcpy((char *)confirm_text2,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+                sizeof(confirm_text2));
         
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
 
@@ -967,6 +985,7 @@ void io_seproxyhal_display(const bagl_element_t *element)
 
 unsigned char io_event(unsigned char channel)
 {
+    UNUSED(channel);
     // nothing done with the event, throw an error on the transport layer if
     // needed
 
