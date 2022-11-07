@@ -716,7 +716,9 @@ uint32_t sign_hash_and_set_result(void)
             rng_rfc6979(G_io_apdu_buffer + 100, tmpCtx.transactionContext.hash, NULL, 0, SECP256K1_N, 32, V, K);
         }
         uint32_t infos;
-        tx = cx_ecdsa_sign(&privateKey, CX_NO_CANONICAL | CX_RND_PROVIDED | CX_LAST, CX_SHA256,
+        // ignores returns signature length which is always 64, we always return length of 65
+        // tx = cx_ecdsa_sign(...) // ignore tx
+        cx_ecdsa_sign(&privateKey, CX_NO_CANONICAL | CX_RND_PROVIDED | CX_LAST, CX_SHA256,
                            tmpCtx.transactionContext.hash, 32, 
                            G_io_apdu_buffer + 100, 100,
                            &infos);
