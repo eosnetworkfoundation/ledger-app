@@ -291,7 +291,9 @@ static void processEosioNewAccountAction(txProcessingContext_t *context) {
         THROW(EXCEPTION);
     }
     buffer += read; bufferLength -= read;
-    read = unpack_variant32(buffer, bufferLength, &size);
+    // unpack typically returns read variable
+    // ignoring return value we only care about pass by reference size
+    unpack_variant32(buffer, bufferLength, &size);
     if (size != 0) {
         PRINTF("No delays allowed");
         THROW(EXCEPTION);
