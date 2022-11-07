@@ -509,14 +509,14 @@ void ui_idle(void)
     ux_flow_init(0, ux_idle_flow, NULL);
 }
 
-unsigned int io_seproxyhal_touch_exit(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_exit(__attribute__((unused)) const bagl_element_t *e)
 {
     // Go back to the dashboard
     os_sched_exit(0);
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_address_ok(__attribute__((unused)) const bagl_element_t *e)
 {
     uint32_t tx = get_public_key_and_set_result();
     io_exchange_with_code(0x9000, tx);
@@ -525,7 +525,7 @@ unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e)
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_address_cancel(__attribute__((unused)) const bagl_element_t *e)
 {
     io_exchange_with_code(0x6985, 0);
     // Display back the original UX
@@ -533,7 +533,7 @@ unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e)
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_tx_ok(__attribute__((unused)) const bagl_element_t *e)
 {
     uint32_t tx = sign_hash_and_set_result();
     io_exchange_with_code(0x9000, tx);
@@ -543,7 +543,7 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e)
     return 0; // do not redraw the widge
 }
 
-unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_tx_cancel(__attribute__((unused)) const bagl_element_t *e)
 {
     io_exchange_with_code(0x6985, 0);
     // Display back the original UX
