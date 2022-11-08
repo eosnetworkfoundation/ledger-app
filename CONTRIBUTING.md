@@ -11,3 +11,7 @@ We are glad you are here to help. This document goes over the process of submitt
 5. Push your changed to `develop` branch to test. Note this runs git actions to verify build
 6. Create a PR to merge the changes from your Branch `#2` into `main`
 7. Merge into github `LedgerHQ/app-eos` on `master` branch
+8. Fill out [LedgerHQ Form](https://ledger.typeform.com/Nano-App?typeform-source=developers.ledger.com) to start review process
+   - we are public release
+   - review [the checklist](https://developers.ledger.com/docs/nano-app/deliverables-checklist/)
+ 
