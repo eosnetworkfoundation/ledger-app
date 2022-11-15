@@ -15,15 +15,15 @@ TESTS_ROOT_DIR = Path(__file__).parent
 # Proposed EOS derivation paths for tests ###
 EOS_PATH = pack_derivation_path("m/44'/194'/12345'")
 
-speculos_expected_public_key = "04a478ace4ac9cdbc8ccfe5560940a2c"
-speculos_expected_public_key += "cdc96d4f7789e7dd4074dbe1eb7865b0"
-speculos_expected_public_key += "0889833972fdafcbd25e71f7515c27c1"
-speculos_expected_public_key += "23449309873e0d16fea13abd2697c035ef"
+SPECULOS_EXPECTED_PUBLIC_KEY = "04a478ace4ac9cdbc8ccfe5560940a2c"
+SPECULOS_EXPECTED_PUBLIC_KEY += "cdc96d4f7789e7dd4074dbe1eb7865b0"
+SPECULOS_EXPECTED_PUBLIC_KEY += "0889833972fdafcbd25e71f7515c27c1"
+SPECULOS_EXPECTED_PUBLIC_KEY += "23449309873e0d16fea13abd2697c035ef"
 
-speculos_expected_address = "EOS85fjM4VLKEYZwJE5FBUhXR3HaFno1t7fpukBfzjm9xUHgzLpuV"
+SPECULOS_EXPECTED_ADDRESS = "EOS85fjM4VLKEYZwJE5FBUhXR3HaFno1t7fpukBfzjm9xUHgzLpuV"
 
-speculos_expected_chaincode = "007c54db71630a77129b2183b701a6da"
-speculos_expected_chaincode += "1cde07a1f4edb1d8ee2f51a14306b4c5"
+SPECULOS_EXPECTED_CHAINCODE = "007c54db71630a77129b2183b701a6da"
+SPECULOS_EXPECTED_CHAINCODE += "1cde07a1f4edb1d8ee2f51a14306b4c5"
 
 
 def get_review_instructions(num_screen_skip):
@@ -36,9 +36,7 @@ def test_eos_mainmenu_and_setting(client, test_name, navigator):
     eos = EosClient(client)
 
     # Get appversion and "data_allowed parameter"
-    rapdu: RAPDU = eos.send_get_app_configuration()
-    assert rapdu.status == STATUS_OK
-    data_allowed, version = eos.parse_get_app_configuration_response(rapdu.data)
+    data_allowed, version = eos.send_get_app_configuration()
     assert data_allowed is False
     assert version == (1, 4, 3)
 
@@ -57,9 +55,7 @@ def test_eos_mainmenu_and_setting(client, test_name, navigator):
     navigator.navigate_and_compare(TESTS_ROOT_DIR, test_name, instructions)
 
     # Check that "data_allowed parameter" changed
-    rapdu: RAPDU = eos.send_get_app_configuration()
-    assert rapdu.status == STATUS_OK
-    data_allowed, version = eos.parse_get_app_configuration_response(rapdu.data)
+    data_allowed, version = eos.send_get_app_configuration()
     assert data_allowed is True
     assert version == (1, 4, 3)
 
@@ -67,23 +63,20 @@ def test_eos_mainmenu_and_setting(client, test_name, navigator):
 def check_get_public_key_resp(client, public_key, address, chaincode):
     if isinstance(client, SpeculosBackend):
         # Check against nominal Speculos seed expected results
-        assert public_key.hex() == speculos_expected_public_key
-        assert address == speculos_expected_address
-        assert chaincode.hex() == speculos_expected_chaincode
+        assert public_key.hex() == SPECULOS_EXPECTED_PUBLIC_KEY
+        assert address == SPECULOS_EXPECTED_ADDRESS
+        assert chaincode.hex() == SPECULOS_EXPECTED_CHAINCODE
 
 
 def test_eos_get_public_key_non_confirm(client):
     eos = EosClient(client)
+
     rapdu: RAPDU = eos.send_get_public_key_non_confirm(EOS_PATH, True)
-
-    assert rapdu.status == STATUS_OK
     public_key, address, chaincode = eos.parse_get_public_key_response(rapdu.data, True)
-
     check_get_public_key_resp(client, public_key, address, chaincode)
 
     # Check that with NO_CHAINCODE, value stay the same
     rapdu: RAPDU = eos.send_get_public_key_non_confirm(EOS_PATH, False)
-    assert rapdu.status == STATUS_OK
     public_key_2, address_2, chaincode_2 = eos.parse_get_public_key_response(rapdu.data, False)
     assert public_key_2 == public_key
     assert address_2 == address
@@ -101,8 +94,6 @@ def test_eos_get_public_key_confirm(test_name, client, firmware, navigator):
                                        test_name,
                                        instructions)
     rapdu: RAPDU = eos.get_async_response()
-
-    assert rapdu.status == STATUS_OK
     public_key, address, chaincode = eos.parse_get_public_key_response(rapdu.data, True)
 
     check_get_public_key_resp(client, public_key, address, chaincode)
@@ -113,7 +104,6 @@ def test_eos_get_public_key_confirm(test_name, client, firmware, navigator):
                                        test_name,
                                        instructions)
     rapdu: RAPDU = eos.get_async_response()
-    assert rapdu.status == STATUS_OK
     public_key_2, address_2, chaincode_2 = eos.parse_get_public_key_response(rapdu.data, False)
     assert public_key_2 == public_key
     assert address_2 == address
@@ -133,7 +123,6 @@ def test_eos_get_public_key_confirm_refused(test_name, client, firmware, navigat
                                            test_name,
                                            instructions)
         rapdu: RAPDU = eos.get_async_response()
-
         assert rapdu.status == ErrorType.USER_CANCEL
         assert len(rapdu.data) == 0
 
@@ -153,8 +142,6 @@ def check_transaction(test_name, client, navigator, transaction_filename, num_sc
                                        test_name,
                                        instructions)
     rapdu: RAPDU = eos.get_async_response()
-    assert rapdu.status == STATUS_OK
-
     eos.verify_signature(EOS_PATH, signing_digest, rapdu.data)
 
 
@@ -194,15 +181,12 @@ def test_eos_transaction_newaccount_ok(test_name, client, navigator):
                                        test_name + "_part1",
                                        get_review_instructions(2) + get_review_instructions(7))
     rapdu: RAPDU = eos.get_async_response()
-    assert rapdu.status == STATUS_OK
 
     with eos._send_async_sign_message(messages[1], False):
         navigator.navigate_and_compare(TESTS_ROOT_DIR,
                                        test_name + "_part2",
                                        get_review_instructions(6) + get_review_instructions(8))
     rapdu: RAPDU = eos.get_async_response()
-    assert rapdu.status == STATUS_OK
-
     eos.verify_signature(EOS_PATH, signing_digest, rapdu.data)
 
 

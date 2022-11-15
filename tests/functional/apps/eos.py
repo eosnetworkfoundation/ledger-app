@@ -69,7 +69,9 @@ class EosClient:
     def __init__(self, client):
         self._client = client
 
-    def parse_get_app_configuration_response(self, response: bytes):
+    def send_get_app_configuration(self) -> (bool, (int, int, int)):
+        rapdu: RAPDU = self._client.exchange(CLA, INS.INS_GET_APP_CONFIGURATION, 0, 0, b"")
+        response = rapdu.data
         # response = dataAllowed (1) ||
         #            LEDGER_MAJOR_VERSION (1) ||
         #            LEDGER_MINOR_VERSION (1) ||
@@ -82,10 +84,7 @@ class EosClient:
         patch = int(response[3])
         return data_allowed, (major, minor, patch)
 
-    def send_get_app_configuration(self):
-        return self._client.exchange(CLA, INS.INS_GET_APP_CONFIGURATION, 0, 0, b"")
-
-    def compute_adress_from_public_key(self, public_key):
+    def compute_adress_from_public_key(self, public_key: bytes) -> str:
 
         head = 0x03 if (public_key[64] & 0x01) == 0x01 else 0x02
         public_key_compressed = bytearray([head]) + public_key[1:33]
@@ -97,7 +96,7 @@ class EosClient:
         buff = b58encode(public_key_compressed + check).decode("ascii")
         return "EOS" + buff
 
-    def parse_get_public_key_response(self, response: bytes, request_chaincode) -> (bytes, str, bytes):
+    def parse_get_public_key_response(self, response: bytes, request_chaincode: bool) -> (bytes, str, bytes):
         # response = public_key_len (1) ||
         #            public_key (var) ||
         #            address_len (1) ||
@@ -125,33 +124,35 @@ class EosClient:
 
         return public_key, address, chaincode
 
-    def _get_public_key_params(self, derivation_path: bytes, confirm: bool, request_chaincode: bool):
-        p1 = P1_CONFIRM if confirm else P1_NON_CONFIRM
+    def send_get_public_key_non_confirm(self, derivation_path: bytes,
+                                        request_chaincode: bool) -> RAPDU:
+        p1 = P1_NON_CONFIRM
         p2 = P2_CHAINCODE if request_chaincode else P2_NO_CHAINCODE
-        return CLA, INS.INS_GET_PUBLIC_KEY, p1, p2, derivation_path
-
-    def send_get_public_key_non_confirm(self, derivation_path: bytes, request_chaincode: bool) -> RAPDU:
-        apdu_params = self._get_public_key_params(derivation_path, False, request_chaincode)
-        return self._client.exchange(*apdu_params)
+        return self._client.exchange(CLA, INS.INS_GET_PUBLIC_KEY,
+                                     p1, p2, derivation_path)
 
     @contextmanager
-    def send_async_get_public_key_confirm(self, derivation_path: bytes, request_chaincode: bool):
-        apdu_params = self._get_public_key_params(derivation_path, True, request_chaincode)
-        with self._client.exchange_async(*apdu_params):
+    def send_async_get_public_key_confirm(self, derivation_path: bytes,
+                                          request_chaincode: bool) -> Generator[None, None, None]:
+        p1 = P1_CONFIRM
+        p2 = P2_CHAINCODE if request_chaincode else P2_NO_CHAINCODE
+        with self._client.exchange_async(CLA, INS.INS_GET_PUBLIC_KEY,
+                                         p1, p2, derivation_path):
             yield
 
     def split_message(self, message: bytes) -> List[bytes]:
         return [message[x:x + MAX_CHUNK_SIZE] for x in range(0, len(message), MAX_CHUNK_SIZE)]
 
-    def _send_sign_message(self, message: bytes, first: bool):
+    def _send_sign_message(self, message: bytes, first: bool) -> RAPDU:
         if first:
             p1 = P1_FIRST
         else:
             p1 = P1_MORE
-        self._client.exchange(CLA, INS.INS_SIGN_MESSAGE, p1, 0, message)
+        return self._client.exchange(CLA, INS.INS_SIGN_MESSAGE, p1, 0, message)
 
     @contextmanager
-    def _send_async_sign_message(self, message: bytes, first: bool):
+    def _send_async_sign_message(self, message: bytes,
+                                 first: bool) -> Generator[None, None, None]:
         if first:
             p1 = P1_FIRST
         else:
@@ -168,7 +169,7 @@ class EosClient:
         if len(messages) > 1:
             self._send_sign_message(messages[0], True)
             for m in messages[1:-1]:
-                self._send_sign_message_more(m, False)
+                self._send_sign_message(m, False)
             first = False
 
         return self._send_async_sign_message(messages[-1], first)
@@ -176,14 +177,16 @@ class EosClient:
     def get_async_response(self) -> RAPDU:
         return self._client.last_async_response
 
-    def check_canonical(self, signature: bytes):
+    def check_canonical(self, signature: bytes) -> None:
         assert (signature[1] & 0x80) == 0
         assert signature[1] != 0 or (signature[2] & 0x80) != 0
 
         assert signature[33] & 0x80 == 0
         assert signature[33] != 0 or (signature[34] & 0x80) != 0
 
-    def verify_signature(self, derivation_path: bytes, signing_digest: bytes, signature: bytes):
+    def verify_signature(self, derivation_path: bytes,
+                         signing_digest: bytes, signature: bytes) -> None:
+        assert len(signature) == 65
         self.check_canonical(signature)
 
         v = signature[0]
