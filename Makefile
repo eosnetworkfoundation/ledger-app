@@ -23,11 +23,11 @@ include $(BOLOS_SDK)/Makefile.defines
 
 APPVERSION_M=1
 APPVERSION_N=4
-APPVERSION_P=3
+APPVERSION_P=4
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 APPNAME = Eos
-APP_LOAD_PARAMS += --appFlags 0x240 --path "44'/194'" --curve secp256k1 $(COMMON_LOAD_PARAMS) 
+APP_LOAD_PARAMS += --appFlags 0x240 --path "44'/194'" --curve secp256k1 $(COMMON_LOAD_PARAMS)
 
 #prepare hsm generation
 ifeq ($(TARGET_NAME),TARGET_NANOS)

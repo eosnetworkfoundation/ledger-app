@@ -47,7 +47,7 @@ virtualenv -p python3 ledger
 source ledger/bin/activate
 pip3 install ledgerblue
 ```
-- Enter container
+- Enter container, everything below is inside the container
 ```
 sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app" --privileged ledger-app-builder:latest
 ```
@@ -64,9 +64,10 @@ python -m ledgerblue.checkGenuineRemote --targetId 0x33000004
    - hardware buttons to accept command
    - Note if you get error `680f`, delete the app and reload it.
 ```
-python -m ledgerblue.loadApp --targetId 0x33100004 --apdu --tlv --fileName bin/app.hex --appName Eos --appFlags 0x00
+python -m ledgerblue.loadApp --appFlags 0x240 --path "44'/194'" --curve secp256k1 --tlv --targetId 0x33100004 --targetVersion="1.0.4" --delete --fileName bin/app.hex --appName Eos --appVersion 1.4.3 --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 /opt/nanosplus-secure-sdk/icon3.py --hexbitmaponly nanox_app_eos.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
 ```
 - [List of Commands for Ledger Blue](https://github.com/LedgerHQ/blue-loader-python/tree/master/ledgerblue)
+- Exit Docker.
 - Stop Vitural Environment, type `deactivate` in shell.
 
 ## Emulator
@@ -85,7 +86,6 @@ python -m ledgerblue.loadApp --targetId 0x33100004 --apdu --tlv --fileName bin/a
 ./speculos.py --display text ./apps/btc.elf
 ```
 - You can go to `http://127.0.0.1:5000/` for another interface and more data
-
 
 
 
