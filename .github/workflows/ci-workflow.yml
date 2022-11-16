@@ -37,7 +37,7 @@ jobs:
       - name: Upload application binaries
         uses: actions/upload-artifact@v3
         with:
-          name: solana_binaries
+          name: eos_binaries
           path: ./bin/eos_${{ matrix.sdk.name }}.elf
           if-no-files-found: error
 
