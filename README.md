@@ -82,4 +82,4 @@ Instructions taken from [Ledger HQ App Builder Readme](https://raw.githubusercon
 - Plugin and unlock your device
 - From within your container  
   - `make load` or `BOLOS_SDK=$NANOSP_SDK make load` for the S-Plus
-  - `make delete` to delete it
+  - `make delete` or `BOLOS_SDK=$NANOSP_SDK make delete` for the S-Plus
