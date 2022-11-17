@@ -6,7 +6,7 @@ from ragger.backend.interface import RAPDU, RaisePolicy
 from ragger.navigator import NavInsID, NavIns
 from ragger.utils import pack_derivation_path
 
-from apps.eos import EosClient, ErrorType, STATUS_OK
+from apps.eos import EosClient, ErrorType
 from apps.eos_transaction_builder import Transaction
 
 
@@ -15,15 +15,15 @@ TESTS_ROOT_DIR = Path(__file__).parent
 # Proposed EOS derivation paths for tests ###
 EOS_PATH = pack_derivation_path("m/44'/194'/12345'")
 
-SPECULOS_EXPECTED_PUBLIC_KEY = "04a478ace4ac9cdbc8ccfe5560940a2c"
-SPECULOS_EXPECTED_PUBLIC_KEY += "cdc96d4f7789e7dd4074dbe1eb7865b0"
-SPECULOS_EXPECTED_PUBLIC_KEY += "0889833972fdafcbd25e71f7515c27c1"
-SPECULOS_EXPECTED_PUBLIC_KEY += "23449309873e0d16fea13abd2697c035ef"
+SPECULOS_EXPECTED_PUBLIC_KEY = "04a478ace4ac9cdbc8ccfe5560940a2c"\
+                               "cdc96d4f7789e7dd4074dbe1eb7865b0"\
+                               "0889833972fdafcbd25e71f7515c27c1"\
+                               "23449309873e0d16fea13abd2697c035ef"
 
 SPECULOS_EXPECTED_ADDRESS = "EOS85fjM4VLKEYZwJE5FBUhXR3HaFno1t7fpukBfzjm9xUHgzLpuV"
 
-SPECULOS_EXPECTED_CHAINCODE = "007c54db71630a77129b2183b701a6da"
-SPECULOS_EXPECTED_CHAINCODE += "1cde07a1f4edb1d8ee2f51a14306b4c5"
+SPECULOS_EXPECTED_CHAINCODE = "007c54db71630a77129b2183b701a6da"\
+                              "1cde07a1f4edb1d8ee2f51a14306b4c5"
 
 
 def get_review_instructions(num_screen_skip):
