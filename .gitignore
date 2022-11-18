@@ -10,3 +10,5 @@ src/glyphs.h
 coverage
 fuzz/corpus/
 fuzz/build/
+tests/elfs/
+tests/functional/snapshots-tmp/
