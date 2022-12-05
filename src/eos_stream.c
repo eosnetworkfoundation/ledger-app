@@ -1,8 +1,4 @@
 /*******************************************************************************
-*   EOS Network Foundation
-*   (c) 2022 EOS Network Foundation
-*   All changes with MIT License see ./License file.
-*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *
@@ -135,7 +131,7 @@ static void processEosioVoteProducer(txProcessingContext_t *context) {
     context->content->argumentCount += totalProducers;
 }
 
-static inline void eos_assert(bool x) {
+static inline void eos_assert(x) {
     if (!x) {
         THROW(STREAM_FAULT);
     }
@@ -291,8 +287,6 @@ static void processEosioNewAccountAction(txProcessingContext_t *context) {
         THROW(EXCEPTION);
     }
     buffer += read; bufferLength -= read;
-    // unpack typically returns read variable
-    // ignoring return value we only care about pass by reference size
     unpack_variant32(buffer, bufferLength, &size);
     if (size != 0) {
         PRINTF("No delays allowed");
@@ -955,7 +949,7 @@ static parserStatus_e processTxInternal(txProcessingContext_t *context) {
  * way as possible, as EOS transaction size isn't fixed
  * and depends on action size. 
  * Also, Ledger Nano S have limited RAM resource, so data caching
- * could be very expensive. Due to these features and limitations
+ * could be very expencive. Due to these features and limitations
  * only some fields are cached before processing. 
  * All data is encoded by DER.ASN1 rules in plain way and serialized as a flat map.
  * 
@@ -968,7 +962,7 @@ static parserStatus_e processTxInternal(txProcessingContext_t *context) {
  *  [Tag][Length][Value]
  * [0x04][ 0x20 ][chain id as octet string]
  * 
- * More information about DER Tag Length Value encoding is here: http://luca.ntop.org/Teaching/Appunti/asn1.html.
+ * More infomation about DER Tag Length Value encoding is here: http://luca.ntop.org/Teaching/Appunti/asn1.html.
  * Only octet tag number is allowed. 
  * Value is encoded as octet string.
  * The length of the string is stored in Length byte(s)

@@ -1,8 +1,4 @@
 /*******************************************************************************
-*   EOS Network Foundation
-*   (c) 2022 EOS Network Foundation
-*   All changes with MIT License see ./License file.
-*
 *   Taras Shchybovyk
 *   (c) 2018 Taras Shchybovyk
 *
@@ -94,8 +90,8 @@ union {
 txProcessingContext_t txProcessingCtx;
 txProcessingContent_t txContent;
 
-volatile char actionCounter[32];
-volatile char confirmLabel[32];
+char actionCounter[32];
+char confirmLabel[32];
 
 #include "ux.h"
 ux_state_t G_ux;
@@ -163,7 +159,7 @@ UX_STEP_CB(
     switch_settings_contract_data(),
     {
       .title = "Contract data",
-      .text = (char *) confirmLabel,
+      .text = confirmLabel,
     });
 
 #else
@@ -197,13 +193,15 @@ UX_FLOW(
 );
 
 void display_settings() {
-    strlcpy((char *) confirmLabel, (N_storage.dataAllowed ?  "Allowed" : "NOT Allowed"),sizeof(confirmLabel));
-    ux_flow_init(0, ux_settings_flow, NULL);
+  strlcpy(confirmLabel,
+          (N_storage.dataAllowed ? "Allowed" : "NOT Allowed"),
+          sizeof(confirmLabel));
+  ux_flow_init(0, ux_settings_flow, NULL);
 }
 
 void switch_settings_contract_data() {
   uint8_t value = (N_storage.dataAllowed ? 0 : 1);
-  nvm_write(&N_storage.dataAllowed, (void*)&value, sizeof(uint8_t));
+  nvm_write((void*)&N_storage.dataAllowed, (void*)&value, sizeof(uint8_t));
   display_settings();
 }
 
@@ -255,8 +253,8 @@ UX_FLOW(
 #define STATE_VARIABLE 1
 #define STATE_RIGHT_BORDER 2
 
-volatile char confirm_text1[16];
-volatile char confirm_text2[16];
+char confirm_text1[16];
+char confirm_text2[16];
 
 void display_next_state(uint8_t state);
 void ux_single_action_sign_flow_ok_pressed();
@@ -267,7 +265,7 @@ UX_STEP_NOCB(
     {
       &C_icon_certificate,
       "Review",
-      (char *) confirmLabel,
+      confirmLabel,
     });
 UX_STEP_NOCB(
     ux_single_action_sign_flow_2_step,
@@ -316,8 +314,8 @@ UX_STEP_CB(
     ux_single_action_sign_flow_ok_pressed(),
     {
       &C_icon_validate_14,
-      (char *) confirm_text1,
-      (char *) confirm_text2,
+      confirm_text1,
+      confirm_text2,
     });
 UX_STEP_CB(
     ux_single_action_sign_flow_8_step,
@@ -392,13 +390,13 @@ void ux_single_action_sign_flow_ok_pressed()
     case STREAM_ACTION_READY:
         ux_step = 0;
         ux_step_count = txContent.argumentCount;
-        snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
-        strlcpy((char *)confirm_text1,
+        snprintf(confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
+        strlcpy(confirm_text1,
                 txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
                 sizeof(confirm_text1));
-        strlcpy((char *)confirm_text2,
-               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
-               sizeof(confirm_text2));
+        strlcpy(confirm_text2,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+                sizeof(confirm_text2));
 
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
         break;
@@ -436,7 +434,7 @@ UX_FLOW_DEF_NOCB(
     bn, //pnn,
     {
       "With",
-      (char *) actionCounter,
+      actionCounter,
     });
 UX_FLOW_DEF_VALID(
     ux_multiple_action_sign_flow_3_step,
@@ -472,12 +470,12 @@ void ux_multiple_action_sign_flow_ok_pressed()
     case STREAM_ACTION_READY:
         ux_step = 0;
         ux_step_count = txContent.argumentCount;
-        snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
-        strlcpy((char *)confirm_text1,
-               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
-               sizeof(confirm_text1));
-        strlcpy((char *)confirm_text2,
-               txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
+        snprintf(confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
+        strlcpy(confirm_text1,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
+                sizeof(confirm_text1));
+        strlcpy(confirm_text2,
+                txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
                 sizeof(confirm_text2));
 
         ux_flow_init(0, ux_single_action_sign_flow, NULL);
@@ -509,15 +507,17 @@ void ui_idle(void)
     ux_flow_init(0, ux_idle_flow, NULL);
 }
 
-unsigned int io_seproxyhal_touch_exit(__attribute__((unused)) const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_exit(const bagl_element_t *e)
 {
+    UNUSED(e);
     // Go back to the dashboard
     os_sched_exit(0);
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_address_ok(__attribute__((unused)) const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e)
 {
+    UNUSED(e);
     uint32_t tx = get_public_key_and_set_result();
     io_exchange_with_code(0x9000, tx);
     // Display back the original UX
@@ -525,16 +525,18 @@ unsigned int io_seproxyhal_touch_address_ok(__attribute__((unused)) const bagl_e
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_address_cancel(__attribute__((unused)) const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e)
 {
+    UNUSED(e);
     io_exchange_with_code(0x6985, 0);
     // Display back the original UX
     ui_idle();
     return 0; // do not redraw the widget
 }
 
-unsigned int io_seproxyhal_touch_tx_ok(__attribute__((unused)) const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e)
 {
+    UNUSED(e);
     uint32_t tx = sign_hash_and_set_result();
     io_exchange_with_code(0x9000, tx);
     // Display back the original UX
@@ -543,8 +545,9 @@ unsigned int io_seproxyhal_touch_tx_ok(__attribute__((unused)) const bagl_elemen
     return 0; // do not redraw the widge
 }
 
-unsigned int io_seproxyhal_touch_tx_cancel(__attribute__((unused)) const bagl_element_t *e)
+unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e)
 {
+    UNUSED(e);
     io_exchange_with_code(0x6985, 0);
     // Display back the original UX
     ui_idle();
@@ -716,12 +719,10 @@ uint32_t sign_hash_and_set_result(void)
             rng_rfc6979(G_io_apdu_buffer + 100, tmpCtx.transactionContext.hash, NULL, 0, SECP256K1_N, 32, V, K);
         }
         uint32_t infos;
-        // ignores returns signature length which is always 64, we always return length of 65
-        // tx = cx_ecdsa_sign(...) // ignore tx
         cx_ecdsa_sign(&privateKey, CX_NO_CANONICAL | CX_RND_PROVIDED | CX_LAST, CX_SHA256,
-                           tmpCtx.transactionContext.hash, 32, 
-                           G_io_apdu_buffer + 100, 100,
-                           &infos);
+                      tmpCtx.transactionContext.hash, 32,
+                      G_io_apdu_buffer + 100, 100,
+                      &infos);
         if ((infos & CX_ECCINFO_PARITY_ODD) != 0)
         {
             G_io_apdu_buffer[100] |= 0x01;
@@ -789,7 +790,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     switch (txResult)
     {
     case STREAM_CONFIRM_PROCESSING:
-        snprintf((char *)actionCounter, sizeof(actionCounter), "%d actions", txProcessingCtx.currentActionNumer);
+        snprintf(actionCounter, sizeof(actionCounter), "%d actions", txProcessingCtx.currentActionNumer);
         ux_flow_init(0, ux_multiple_action_sign_flow, NULL);
 
         *flags |= IO_ASYNCH_REPLY;
@@ -800,15 +801,15 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         ux_step_count = txContent.argumentCount;
 
         if (txProcessingCtx.currentActionNumer > 1) {
-            snprintf((char *)confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
+            snprintf(confirmLabel, sizeof(confirmLabel), "Action #%d", txProcessingCtx.currentActionIndex);
         } else {
-            strlcpy((char *)confirmLabel, "Transaction", sizeof(confirmLabel));
+            strlcpy(confirmLabel, "Transaction", sizeof(confirmLabel));
         }
 
-        strlcpy((char *)confirm_text1,
+        strlcpy(confirm_text1,
                 txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "Sign" : "Accept",
                 sizeof(confirm_text1));
-        strlcpy((char *)confirm_text2,
+        strlcpy(confirm_text2,
                 txProcessingCtx.currentActionIndex == txProcessingCtx.currentActionNumer ? "transaction" : "& review next",
                 sizeof(confirm_text2));
         
@@ -1069,7 +1070,7 @@ __attribute__((section(".boot"))) int main(void)
                     internalStorage_t storage;
                     storage.dataAllowed = 0x00;
                     storage.initialized = 0x01;
-                    nvm_write(&N_storage, (void *)&storage,
+                    nvm_write((void*)&N_storage, (void *)&storage,
                               sizeof(internalStorage_t));
                 }
 
