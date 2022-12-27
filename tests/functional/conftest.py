@@ -1,14 +1,16 @@
 import pytest
 from pathlib import Path
-from ragger import Firmware
+from ragger.firmware import Firmware
 from ragger.backend import SpeculosBackend, LedgerCommBackend, LedgerWalletBackend
 from ragger.navigator import NanoNavigator
 from ragger.utils import app_path_from_app_name
 
 
 # This variable is needed for Speculos only (physical tests need the application to be already installed)
+# Adapt this path to your 'tests/elfs' directory
 APPS_DIRECTORY = (Path(__file__).parent.parent / "elfs").resolve()
 
+# Adapt this name part of the compiled app <name>_<device>.elf in the APPS_DIRECTORY
 APP_NAME = "eos"
 
 BACKENDS = ["speculos", "ledgercomm", "ledgerwallet"]
@@ -28,7 +30,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def backend(pytestconfig):
+def backend_name(pytestconfig):
     return pytestconfig.getoption("backend")
 
 
@@ -85,29 +87,29 @@ def prepare_speculos_args(firmware: Firmware, display: bool):
 # Depending on the "--backend" option value, a different backend is
 # instantiated, and the tests will either run on Speculos or on a physical
 # device depending on the backend
-def create_backend(backend: str, firmware: Firmware, display: bool):
-    if backend.lower() == "ledgercomm":
+def create_backend(backend_name: str, firmware: Firmware, display: bool):
+    if backend_name.lower() == "ledgercomm":
         return LedgerCommBackend(firmware, interface="hid")
-    elif backend.lower() == "ledgerwallet":
+    elif backend_name.lower() == "ledgerwallet":
         return LedgerWalletBackend(firmware)
-    elif backend.lower() == "speculos":
+    elif backend_name.lower() == "speculos":
         args, kwargs = prepare_speculos_args(firmware, display)
         return SpeculosBackend(*args, firmware, **kwargs)
     else:
-        raise ValueError(f"Backend '{backend}' is unknown. Valid backends are: {BACKENDS}")
+        raise ValueError(f"Backend '{backend_name}' is unknown. Valid backends are: {BACKENDS}")
 
 
-# This final fixture will return the properly configured backend client, to be used in tests
+# This final fixture will return the properly configured backend, to be used in tests
 @pytest.fixture
-def client(backend, firmware, display):
-    with create_backend(backend, firmware, display) as b:
+def backend(backend_name, firmware, display):
+    with create_backend(backend_name, firmware, display) as b:
         yield b
 
 
 @pytest.fixture
-def navigator(client, firmware, golden_run):
+def navigator(backend, firmware, golden_run):
     if firmware.device.startswith("nano"):
-        return NanoNavigator(client, firmware, golden_run)
+        return NanoNavigator(backend, firmware, golden_run)
     else:
         raise ValueError(f"Device '{firmware.device}' is unsupported.")
 
@@ -117,7 +119,7 @@ def use_only_on_backend(request, backend):
     if request.node.get_closest_marker('use_on_backend'):
         current_backend = request.node.get_closest_marker('use_on_backend').args[0]
         if current_backend != backend:
-            pytest.skip('skipped on this backend: {}'.format(current_backend))
+            pytest.skip(f'skipped on this backend: "{current_backend}"')
 
 
 def pytest_configure(config):
