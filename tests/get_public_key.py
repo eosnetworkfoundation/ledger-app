@@ -5,7 +5,6 @@ import argparse
 
 from pathlib import Path
 
-from ragger.utils import pack_derivation_path
 from ragger.backend import LedgerCommBackend
 
 
@@ -23,7 +22,7 @@ args = parser.parse_args()
 if args.path is None:
     args.path = "m/44'/194'/0'/0/0"
 
-eos_path = pack_derivation_path(args.path)
+eos_path = args.path
 
 with LedgerCommBackend(None, interface="hid") as backend:
     eos = EosClient(backend)
