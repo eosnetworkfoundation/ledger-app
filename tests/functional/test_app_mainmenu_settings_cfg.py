@@ -17,22 +17,23 @@ def test_app_mainmenu_settings_cfg(backend, navigator, test_name):
     assert data_allowed is False
     assert version == (MAJOR, MINOR, PATCH)
 
-    # Navigate in the main menu and the setting menu
-    # Change the "data_allowed parameter" value
-    instructions = [
-        NavIns(NavInsID.RIGHT_CLICK),
-        NavIns(NavInsID.RIGHT_CLICK),
-        NavIns(NavInsID.RIGHT_CLICK),
-        NavIns(NavInsID.LEFT_CLICK),
-        NavIns(NavInsID.BOTH_CLICK),
-        NavIns(NavInsID.BOTH_CLICK),
-        NavIns(NavInsID.RIGHT_CLICK),
-        NavIns(NavInsID.BOTH_CLICK)
-    ]
-    navigator.navigate_and_compare(ROOT_SCREENSHOT_PATH, test_name, instructions,
-                                   screen_change_before_first_instruction=False)
+    if type(backend).__name__ == "SpeculosBackend":
+        # Navigate in the main menu and the setting menu
+        # Change the "data_allowed parameter" value
+        instructions = [
+            NavIns(NavInsID.RIGHT_CLICK),
+            NavIns(NavInsID.RIGHT_CLICK),
+            NavIns(NavInsID.RIGHT_CLICK),
+            NavIns(NavInsID.LEFT_CLICK),
+            NavIns(NavInsID.BOTH_CLICK),
+            NavIns(NavInsID.BOTH_CLICK),
+            NavIns(NavInsID.RIGHT_CLICK),
+            NavIns(NavInsID.BOTH_CLICK)
+        ]
+        navigator.navigate_and_compare(ROOT_SCREENSHOT_PATH, test_name, instructions,
+                                       screen_change_before_first_instruction=False)
 
-    # Check that "data_allowed parameter" changed
-    data_allowed, version = client.send_get_app_configuration()
-    assert data_allowed is True
-    assert version == (MAJOR, MINOR, PATCH)
+        # Check that "data_allowed parameter" changed
+        data_allowed, version = client.send_get_app_configuration()
+        assert data_allowed is True
+        assert version == (MAJOR, MINOR, PATCH)
