@@ -1,9 +1,9 @@
-from base58 import b58encode
 from contextlib import contextmanager
 from enum import IntEnum
 from pycoin.ecdsa.secp256k1 import secp256k1_generator
 from typing import Generator
-import hashlib
+
+from bip_utils.addr import EosAddrEncoder
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -13,6 +13,7 @@ from cryptography.hazmat.primitives.asymmetric.utils import Prehashed
 
 from ragger.backend.interface import BackendInterface, RAPDU
 from ragger.utils import split_message
+from ragger.bip import pack_derivation_path
 
 
 class INS(IntEnum):
@@ -86,16 +87,7 @@ class EosClient:
         return data_allowed, (major, minor, patch)
 
     def compute_adress_from_public_key(self, public_key: bytes) -> str:
-
-        head = 0x03 if (public_key[64] & 0x01) == 0x01 else 0x02
-        public_key_compressed = bytearray([head]) + public_key[1:33]
-
-        ripemd = hashlib.new('ripemd160')
-        ripemd.update(public_key_compressed)
-        check = ripemd.digest()[:4]
-
-        buff = b58encode(public_key_compressed + check).decode("ascii")
-        return "EOS" + buff
+        return EosAddrEncoder.EncodeKey(public_key)
 
     def parse_get_public_key_response(self, response: bytes, request_chaincode: bool) -> (bytes, str, bytes):
         # response = public_key_len (1) ||
@@ -125,20 +117,22 @@ class EosClient:
 
         return public_key, address, chaincode
 
-    def send_get_public_key_non_confirm(self, derivation_path: bytes,
+    def send_get_public_key_non_confirm(self, derivation_path: str,
                                         request_chaincode: bool) -> RAPDU:
         p1 = P1_NON_CONFIRM
         p2 = P2_CHAINCODE if request_chaincode else P2_NO_CHAINCODE
+        payload = pack_derivation_path(derivation_path)
         return self._client.exchange(CLA, INS.INS_GET_PUBLIC_KEY,
-                                     p1, p2, derivation_path)
+                                     p1, p2, payload)
 
     @contextmanager
-    def send_async_get_public_key_confirm(self, derivation_path: bytes,
+    def send_async_get_public_key_confirm(self, derivation_path: str,
                                           request_chaincode: bool) -> Generator[None, None, None]:
         p1 = P1_CONFIRM
         p2 = P2_CHAINCODE if request_chaincode else P2_NO_CHAINCODE
+        payload = pack_derivation_path(derivation_path)
         with self._client.exchange_async(CLA, INS.INS_GET_PUBLIC_KEY,
-                                         p1, p2, derivation_path):
+                                         p1, p2, payload):
             yield
 
     def _send_sign_message(self, message: bytes, first: bool) -> RAPDU:
@@ -159,9 +153,10 @@ class EosClient:
             yield
 
     def send_async_sign_message(self,
-                                derivation_path: bytes,
+                                derivation_path: str,
                                 message: bytes) -> Generator[None, None, None]:
-        messages = split_message(derivation_path + message, MAX_CHUNK_SIZE)
+        payload = pack_derivation_path(derivation_path) + message
+        messages = split_message(payload, MAX_CHUNK_SIZE)
         first = True
 
         if len(messages) > 1:
@@ -182,7 +177,7 @@ class EosClient:
         assert signature[33] & 0x80 == 0
         assert signature[33] != 0 or (signature[34] & 0x80) != 0
 
-    def verify_signature(self, derivation_path: bytes,
+    def verify_signature(self, derivation_path: str,
                          signing_digest: bytes, signature: bytes) -> None:
         assert len(signature) == 65
         self.check_canonical(signature)

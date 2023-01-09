@@ -6,7 +6,6 @@ import argparse
 
 from pathlib import Path
 
-from ragger.utils import pack_derivation_path
 from ragger.backend import LedgerCommBackend
 
 
@@ -27,7 +26,7 @@ if args.path is None:
 if args.file is None:
     args.file = 'corpus/transaction.json'
 
-eos_path = pack_derivation_path(args.path)
+eos_path = args.path
 
 with open(args.file) as f:
     obj = json.load(f)
