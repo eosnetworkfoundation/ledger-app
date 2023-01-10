@@ -65,7 +65,7 @@ pip install pytest pycoin asn1 base58
 ### Run Tests
 
 You can run emulated tests for a specific device or for all devices. Set `--device` to `all` for all devices.
-To see the GUI for the tests you can use `--display=qt`. If you want to run tests in the background use `--display=headless`. The last option is `--display=text` which simulates the UI inside the terminal. 
+Use `--display` to see the emulated UI as the tests are run. The default mode runs the emulator in headless mode.  
 ```
 cd test/functional
 pytest -v --tb=short --device=nanox --display

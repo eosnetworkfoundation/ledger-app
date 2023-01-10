@@ -38,7 +38,7 @@ git clone https://github.com/eosnetworkfoundation/ledger-app.git
 * copy over the files and enter the docker container
 ```
 cd ledger-app
-sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+sudo docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
 bash-5.1# make clean
 bash-5.1# make
 ```
@@ -46,7 +46,7 @@ bash-5.1# make
 If you want to **load** and **delete** your app directly from the container image you need to provide `--privileged` access.
 
 ```
-sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app" --privileged ledger-app-builder:latest
+sudo docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app" --privileged ledger-app-builder:latest
 bash-5.1# make clean
 bash-5.1# make
 ```
@@ -54,7 +54,7 @@ bash-5.1# make
 ## Clang Analyzer
 
 ```
-sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+sudo docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
 bash-5.1# make scan-build
 ```
 
@@ -68,7 +68,7 @@ The `BOLOS_SDK` has three varients
 For Nano X, specify the BOLOS_SDK environment variable before building your app:
 
 ```
-sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+sudo docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
 bash-5.1# make clean
 bash-5.1# BOLOS_SDK=$NANOX_SDK make
 ```
@@ -76,7 +76,7 @@ bash-5.1# BOLOS_SDK=$NANOX_SDK make
 For Nano S+, specify the BOLOS_SDK environment variable before building your app:
 
 ```
-sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+sudo docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
 bash-5.1# make clean
 bash-5.1# BOLOS_SDK=$NANOSP_SDK make
 ```
