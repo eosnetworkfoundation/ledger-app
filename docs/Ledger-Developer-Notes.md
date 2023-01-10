@@ -1,22 +1,24 @@
 ## Notes
 
-Highly recomended to setup the Speculos emulator. Installing Ledger Blue is optional, and recomend holding off on the Ledger Blue tools untill you need them. 
+Setting up the Speculos emulator and Ragger test utility is highly recommended.
 
 ### Setup
-   - Follow instructions in [README](../README.md) to build & compile 
+   - Follow instructions in [README](../README.md) to build & compile
    - Setup the [Speculor Emulator](./speculos-emulator-setup.md)
-   - Optionally setup [Ledger Blue](./ledger-blue-setup.md) command line tools 
-   
+   - Optionally setup [Ledger Blue](./ledger-blue-setup.md) command line tools
+
 ## Testing
-   - Instructions on [Running Tests](./running-test.md)
+   - Instructions on [Running Tests](./running-tests.md)
    - LedgerHQ notes on [Testing with Ragger](../tests/functional/usage.md)
 
 ### Creating a New App
    - [General Process](https://developers.ledger.com/docs/coin/general-process/)
-   - [Start Here](https://developers.ledger.com/docs/nano-app/start-here/)
-   
-### Developer Notes 
-   - [Side Loading Apps](https://developers.ledger.com/docs/nano-app/load/)
+   - [Developer Portal](https://developers.ledger.com/)
+
+### Developer Notes
+   - Side Loading Apps
+      - [Linux](https://developers.ledger.com/docs/embedded-app/load-linux/)
+      - [Mac OSx](https://developers.ledger.com/docs/embedded-app/load-mac/)
    - [Ragger Documentation](https://ledgerhq.github.io/ragger/)
 
 
@@ -24,4 +26,3 @@ Highly recomended to setup the Speculos emulator. Installing Ledger Blue is opti
    - [Speculos Overview](https://developers.ledger.com/docs/speculos/introduction/)
    - [Usage](https://developers.ledger.com/docs/speculos/user/usage/)
    - [Linux](https://developers.ledger.com/docs/speculos/installation/build/)
-   

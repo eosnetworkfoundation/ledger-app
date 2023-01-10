@@ -12,10 +12,11 @@ To use the generic wallet refer to `signTransaction.py`, `getPublicKey.py` or Le
 * Install Docker on your machines
 * Checkout the app builder repository
 
+Note the `./full` path on `docker build` differentiate from the previous version now under `legacy`
 ```
 git clone https://github.com/LedgerHQ/ledger-app-builder.git
 cd ledger-app-builder
-sudo docker build -t ledger-app-builder:latest .
+sudo docker build -t ledger-app-builder:latest ./full
 ```
 
 This will take a few minutes to install

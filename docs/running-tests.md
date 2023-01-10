@@ -2,9 +2,9 @@
 
 ## Setup
 
-General configuration for pytest is under `ledger-app/tests/functional/conftest.py`. Configuration includes useful information like the `app name`, the `devices`, and the `ragger backends`. 
+General configuration for pytest is under `ledger-app/tests/functional/conftest.py`. Configuration includes useful information like the `app name`, the `devices`, and the `ragger backends`.
 
-### Ragger 
+### Ragger
 First install `ragger`. It is a python package. May be [installed via pip](https://ledgerhq.github.io/ragger/installation.html)
 
 Alternatively you can install directly from the github repo.
@@ -19,9 +19,9 @@ See [Ragger Documentation](https://ledgerhq.github.io/ragger/) for addtional inf
 
 ### Build The App
 
-Follow the instructions in [Readme](../README.md#compile-your-ledger-app). 
+Follow the instructions in [Readme](../README.md#compile-your-ledger-app).
 
-After each build rename the binaries from `app.elf` to `eos_<device>.elf`. Device is one of the three listed here *nano*, *nanox*, *nanosp*. You will find the binaries under `/bin` directory. 
+After each build rename the binaries from `app.elf` to `eos_<device>.elf`. Device is one of the three listed here *nano*, *nanox*, *nanosp*. You will find the binaries under `/bin` directory.
 
 ### Setup Binaries
 
@@ -34,7 +34,7 @@ cp eos_*.elf ../tests/elfs
 cd ../
 ```
 
-## Repeat 
+## Repeat
 Build and copy the binary for each device to `tests/elfs`
 
 There should be three binaries under `tests/elfs`
@@ -64,12 +64,13 @@ pip install pytest pycoin asn1 base58
 
 ### Run Tests
 
+You can run emulated tests for a specific device or for all devices. Set `--device` to `all` for all devices.
+To see the GUI for the tests you can use `--display=qt`. If you want to run tests in the background use `--display=headless`. The last option is `--display=text` which simulates the UI inside the terminal. 
 ```
 cd test/functional
-pytest -v --tb=short --nanox --display
+pytest -v --tb=short --device=nanox --display
 ```
 
 ### CleanUp
 
 remove the directory `ledger-app/tests/functional/snapshots-tmp/` to clean out the old snapshots
-
