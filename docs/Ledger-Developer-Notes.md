@@ -3,9 +3,9 @@
 Setting up the Speculos emulator and Ragger test utility is highly recommended.
 
 ### Setup
+Note for Mac OSx you will need to install ledgerblue to sideload apps onto your physical device.
    - Follow instructions in [README](../README.md) to build & compile
    - Setup the [Speculor Emulator](./speculos-emulator-setup.md)
-   - Optionally setup [Ledger Blue](./ledger-blue-setup.md) command line tools
 
 ## Testing
    - Instructions on [Running Tests](./running-tests.md)
