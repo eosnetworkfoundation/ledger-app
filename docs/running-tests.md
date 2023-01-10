@@ -2,7 +2,7 @@
 
 ## Setup
 
-General configuration for pytest is under `ledger-app/tests/functional/conftest.py`. Configuration inclues useful information like the `app name`, the `devices`, and the `ragger backends`. 
+General configuration for pytest is under `ledger-app/tests/functional/conftest.py`. Configuration includes useful information like the `app name`, the `devices`, and the `ragger backends`. 
 
 ### Ragger 
 First install `ragger`. It is a python package. May be [installed via pip](https://ledgerhq.github.io/ragger/installation.html)
