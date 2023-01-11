@@ -21,7 +21,7 @@ def test_app_mainmenu_settings_cfg(backend, navigator, test_name):
 
     # scoping navigation and next test to the emulator
     # navigation instructions are not applied to physical devices
-    # without navigation instructions allow data remmained unchanged
+    # without navigation instructions allow data remained unchanged
     #    no sense in running this test when there is no change
     if isinstance(backend, SpeculosBackend):
         # Navigate in the main menu and the setting menu
